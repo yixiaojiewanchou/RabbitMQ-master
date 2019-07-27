@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>My WebSocket</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+Welcome<br/>
+<input id="text" type="text" />
+<div id="message">
+</div>
+</body>
+<script src="static/stomp.js"></script>
+<script src="static/sockjs.js"></script>
+<script type="text/javascript">
+
+    if (typeof WebSocket == 'undefined') {
+        console.log('不支持websocket')
+    }
+
+    // 初始化 ws 对象
+
+    var ws = new WebSocket('ws://127.0.0.1:15674/ws');
+
+    // 获得Stomp client对象
+    var client = Stomp.over(ws);
+
+    // 定义连接成功回调函数
+    var on_connect = function(x) {
+        //data.body是接收到的数据
+        client.subscribe("/queue/Hello2", function(data) {
+            var msg = data.body;
+            alert("收到数据：" + msg);
+        });
+    };
+
+    // 定义错误时回调函数
+    var on_error =  function() {
+        console.log('error');
+    };
+
+    // 连接RabbitMQ
+    client.connect('guest', 'guest', on_connect, on_error, '/');
+    console.log(">>>连接上http://localhost:15674");
+</script>
+</html>
